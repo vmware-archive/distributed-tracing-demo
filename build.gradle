@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE"
     }
 }
 
@@ -75,7 +75,7 @@ configure(subprojects) {
         compile "org.springframework.cloud:spring-cloud-sleuth-stream"
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile "org.aspectj:aspectjrt"
-        compile "org.springframework.amqp:spring-amqp:${amqpVersion}"
+        compile "org.springframework.amqp:spring-amqp"
         // for JSON logging
         runtime('net.logstash.logback:logstash-logback-encoder:4.6') {
             exclude group: "ch.qos.logback", module: "logback-core"
