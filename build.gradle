@@ -58,8 +58,8 @@ configure(subprojects) {
         maven {
             url "http://repo.spring.io/libs-release-local"
         }
-       maven {
-           url "http://repo.spring.io/libs-staging-local/"
+        maven {
+            url "http://repo.spring.io/libs-staging-local/"
         }
     }
 
@@ -67,21 +67,6 @@ configure(subprojects) {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:$BOM_VERSION"
         }
-    }
-
-    dependencies {
-        compile "org.springframework.boot:spring-boot-starter-web"
-        compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
-        compile "org.springframework.cloud:spring-cloud-sleuth-stream"
-        compile "org.springframework.boot:spring-boot-starter-actuator"
-        compile "org.aspectj:aspectjrt"
-        compile "org.springframework.amqp:spring-amqp"
-        // for JSON logging
-        runtime('net.logstash.logback:logstash-logback-encoder:4.6') {
-            exclude group: "ch.qos.logback", module: "logback-core"
-        }
-
-        runtime 'org.aspectj:aspectjweaver'
     }
 
     wrapper {
@@ -98,6 +83,25 @@ configure(subprojects) {
             exceptionFormat = 'full'
             showStandardStreams = true
         }
+    }
+
+}
+
+configure(subprojects - project(':acceptance-tests')) {
+
+    dependencies {
+        compile "org.springframework.boot:spring-boot-starter-web"
+        compile "org.springframework.cloud:spring-cloud-starter-stream-rabbit"
+        compile "org.springframework.cloud:spring-cloud-sleuth-stream"
+        compile "org.springframework.boot:spring-boot-starter-actuator"
+        compile "org.aspectj:aspectjrt"
+        compile "org.springframework.amqp:spring-amqp"
+        // for JSON logging
+        runtime('net.logstash.logback:logstash-logback-encoder:4.6') {
+            exclude group: "ch.qos.logback", module: "logback-core"
+        }
+
+        runtime 'org.aspectj:aspectjweaver'
     }
 
 }
