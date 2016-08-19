@@ -61,6 +61,8 @@ class MessageFlowSpec extends Specification {
 			void run() {
 				ResponseEntity<String> service1Response = restTemplate().exchange(request, String)
 				log.info("Response from service1Response is [$service1Response]")
+				assert service1Response != null
+				assert service1Response.headers.get(TRACE_ID_HEADER_NAME) != null
 				assert service1Response.headers.get(TRACE_ID_HEADER_NAME).get(0) == traceId
 				assert service1Response.statusCode == HttpStatus.OK
 				assert service1Response.body == 'Hello from service2, response from service3 [Hello from service3] and from service4 [Hello from service4]'
