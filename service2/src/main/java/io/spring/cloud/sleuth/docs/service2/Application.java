@@ -29,7 +29,7 @@ public class Application {
 	@Autowired Tracer tracer;
 	@Value("${service3.address:localhost:8083}") String serviceAddress3;
 	@Value("${service4.address:localhost:8084}") String serviceAddress4;
-	@Value("${server.port:8082") Integer port;
+	Integer port = 8082;
 
 	@RequestMapping("/foo")
 	public String service2MethodInController() throws InterruptedException {
