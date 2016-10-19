@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,7 @@ public class Application {
 	@Autowired Tracer tracer;
 	@Value("${service3.address:localhost:8083}") String serviceAddress3;
 	@Value("${service4.address:localhost:8084}") String serviceAddress4;
-	@LocalServerPort Integer port;
+	@Value("${server.port:8082") Integer port;
 
 	@RequestMapping("/foo")
 	public String service2MethodInController() throws InterruptedException {
