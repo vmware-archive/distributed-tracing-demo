@@ -26,10 +26,12 @@ import org.springframework.http.*
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
+import spock.lang.Unroll
 import zipkin.Codec
 
 import static com.jayway.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
+import static org.springframework.cloud.sleuth.Span.SPAN_ID_NAME
 
 @ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
 @Slf4j
@@ -42,6 +44,7 @@ class MessageFlowSpec extends Specification {
 	@Value('${zipkin.query.port:9411}') Integer zipkinQueryPort
 	@Value('${LOCAL_URL:http://localhost}') String zipkinQueryUrl
 
+	@Unroll
 	def 'should send message to service1 and receive combined response for traceId [#traceId]'() {
 		given: "Request with a traceId"
 			RequestEntity request = request_to_service1(traceId)
@@ -71,10 +74,11 @@ class MessageFlowSpec extends Specification {
 
 	RequestEntity request_to_service1(String traceId) {
 		HttpHeaders headers = new HttpHeaders()
+		headers.add(SPAN_ID_NAME, traceId)
 		headers.add(TRACE_ID_HEADER_NAME, traceId)
 		URI uri = URI.create("$service1Url/start")
 		RequestEntity requestEntity = new RequestEntity<>(headers, HttpMethod.POST, uri)
-		log.info("Request with to service1 [$requestEntity] is ready")
+		log.info("Request with traceid [$traceId] to service1 [$requestEntity] is ready")
 		return requestEntity
 	}
 
