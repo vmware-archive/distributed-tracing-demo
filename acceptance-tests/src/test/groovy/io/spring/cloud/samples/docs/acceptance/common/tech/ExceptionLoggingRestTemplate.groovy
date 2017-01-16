@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.acceptance.common.tech
+package io.spring.cloud.samples.docs.acceptance.common.tech
 
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpMethod

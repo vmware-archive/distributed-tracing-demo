@@ -59,6 +59,7 @@ configure(subprojects) {
 
     repositories {
         mavenLocal()
+        jcenter()
         maven {
             url "http://repo.spring.io/snapshot"
         }
@@ -112,6 +113,52 @@ configure(subprojects - project(':acceptance-tests')) {
         }
 
         runtime 'org.aspectj:aspectjweaver'
+    }
+
+}
+
+configure(project(":acceptance-tests")) {
+    apply plugin: 'groovy'
+
+    bootRepackage {
+        enabled = false
+    }
+
+    bootRun {
+        enabled = false
+    }
+
+    dependencies {
+        compile "org.aspectj:aspectjrt:1.8.8"
+        compile "org.springframework.boot:spring-boot-starter-web"
+        compile 'org.codehaus.groovy:groovy-all'
+
+        testCompile 'org.awaitility:awaitility:2.0.0'
+        testCompile "org.springframework.boot:spring-boot-starter-test"
+        testCompile "org.springframework:spring-web"
+        testCompile "org.springframework.boot:spring-boot-starter-web"
+        testCompile "org.springframework.cloud:spring-cloud-starter-sleuth"
+        testCompile "io.zipkin.java:zipkin:1.0.0"
+        testCompile( 'com.athaydes:spock-reports:1.2.13' ) {
+            transitive = false // this avoids affecting your version of Groovy/Spock
+        }
+        testCompile "org.spockframework:spock-spring"
+    }
+
+    test {
+        exclude '**/*.*'
+    }
+
+    task acceptanceTests(type: Test) {
+        jvmArgs systemPropsFromGradle()
+        testLogging {
+            exceptionFormat = 'full'
+            showStandardStreams = true
+        }
+        include '**/*.*'
+
+        group = "Verification"
+        description = "Runs the acceptance tests"
     }
 
 }

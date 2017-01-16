@@ -1,4 +1,4 @@
-package io.spring.cloud.samples.brewery.zipkin;
+package io.spring.cloud.samples.docs.zipkin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

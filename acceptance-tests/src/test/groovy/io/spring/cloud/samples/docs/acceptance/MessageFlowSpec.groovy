@@ -13,27 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.spring.cloud.samples.brewery.acceptance
+package io.spring.cloud.samples.docs.acceptance
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
-import io.spring.cloud.samples.brewery.acceptance.common.tech.ExceptionLoggingRestTemplate
-import io.spring.cloud.samples.brewery.acceptance.common.tech.TestConfiguration
+import io.spring.cloud.samples.docs.acceptance.common.tech.ExceptionLoggingRestTemplate
+import io.spring.cloud.samples.docs.acceptance.common.tech.TestConfiguration
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.SpringApplicationContextLoader
+import org.springframework.boot.test.context.SpringBootContextLoader
 import org.springframework.cloud.sleuth.Span
-import org.springframework.http.*
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
 import zipkin.Codec
 
-import static com.jayway.awaitility.Awaitility.await
+import static org.awaitility.Awaitility.await
 import static java.util.concurrent.TimeUnit.SECONDS
 import static org.springframework.cloud.sleuth.Span.SPAN_ID_NAME
 
-@ContextConfiguration(classes = TestConfiguration, loader = SpringApplicationContextLoader)
+@ContextConfiguration(classes = TestConfiguration, loader = SpringBootContextLoader)
 @Slf4j
 class MessageFlowSpec extends Specification {
 
