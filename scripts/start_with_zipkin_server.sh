@@ -53,13 +53,13 @@ docker-compose build
 docker-compose up -d
 
 echo -e "\nStarting Zipkin Server..."
-nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar zipkin-server/build/libs/*.jar > build/zipkin-server.log &
+nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar zipkin-server/build/libs/*.jar > build/zipkin-server.out &
 
 echo -e "\nStarting the apps..."
-nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar service1/build/libs/*.jar > build/service1.log &
+nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar service1/build/libs/*.jar > build/service1.out &
 nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar service2/build/libs/*.jar > build/service2.log &
 nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar service3/build/libs/*.jar > build/service3.log &
-nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar service4/build/libs/*.jar > build/service4.log &
+nohup ${JAVA_HOME}/bin/java ${DEFAULT_ARGS} ${MEM_ARGS} -jar service4/build/libs/*.jar > build/service4.out &
 
 echo -e "\n\nChecking if Zipkin is alive"
 check_app ${ZIPKIN_PORT}
