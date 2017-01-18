@@ -28,10 +28,13 @@ public class Application {
 
 	@RequestMapping("/start")
 	public String start() throws InterruptedException {
+		log.info("Hello from service1. Setting baggage foo=>bar");
+		tracer.getCurrentSpan().setBaggageItem("foo", "bar");
 		log.info("Hello from service1. Calling service2");
 		String response = restTemplate.getForObject("http://" + serviceAddress + "/foo", String.class);
 		Thread.sleep(100);
 		log.info("Got response from service2 [{}]", response);
+		log.info("Service1: Baggage for [foo] is [" + tracer.getCurrentSpan().getBaggageItem("foo") + "]");
 		return response;
 	}
 
