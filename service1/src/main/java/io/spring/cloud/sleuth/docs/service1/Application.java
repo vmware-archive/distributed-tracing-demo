@@ -29,6 +29,7 @@ public class Application {
 	@RequestMapping("/start")
 	public String start() throws InterruptedException {
 		log.info("Hello from service1. Setting baggage foo=>bar");
+		log.info("Super secret baggage item for key [baggage] is [" + tracer.getCurrentSpan().getBaggageItem("baggage") + "]");
 		tracer.getCurrentSpan().setBaggageItem("foo", "bar");
 		log.info("Hello from service1. Calling service2");
 		String response = restTemplate.getForObject("http://" + serviceAddress + "/foo", String.class);
