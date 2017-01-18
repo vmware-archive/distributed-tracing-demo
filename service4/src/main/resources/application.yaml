@@ -7,5 +7,3 @@ spring:
       percentage: 1.0
 
 logging.level.org.springframework.cloud.sleuth: DEBUG
-
-logging.pattern.level: "%clr(%5p) %clr([${spring.application.name:-},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-B3-ParentSpanId:-},%X{X-Span-Export:-}]){yellow}"
