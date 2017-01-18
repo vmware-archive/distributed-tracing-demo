@@ -35,7 +35,7 @@ configure(subprojects) {
         systemPropsFromGradle = {
             project.gradle.startParameter.systemPropertiesArgs.entrySet().collect{"-D${it.key}=${it.value}"}
         }
-        buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "1.0.0"
+        buildNrLoc = project.hasProperty('buildNr') ? "${buildNr}" : "1.0.0.SLEUTH_DOCS"
     }
 
     group = 'io.spring.cloud.sleuth.docs'
