@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +30,12 @@ public class Application {
 	@RequestMapping("/start")
 	public String start() throws InterruptedException {
 		log.info("Hello from service1. Setting baggage foo=>bar");
-		log.info("Super secret baggage item for key [baggage] is [" + tracer.getCurrentSpan().getBaggageItem("baggage") + "]");
+		String secretBaggage = tracer.getCurrentSpan().getBaggageItem("baggage");
+		log.info("Super secret baggage item for key [baggage] is [" + secretBaggage + "]");
+		if (StringUtils.hasText(secretBaggage)) {
+			tracer.getCurrentSpan().logEvent("secret_baggage_received");
+			tracer.addTag("secret_baggage", secretBaggage);
+		}
 		tracer.getCurrentSpan().setBaggageItem("foo", "bar");
 		log.info("Hello from service1. Calling service2");
 		String response = restTemplate.getForObject("http://" + serviceAddress + "/foo", String.class);
