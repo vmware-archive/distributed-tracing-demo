@@ -48,6 +48,9 @@ public class Application {
 			String response = restTemplate.getForObject("http://" + serviceAddress + "/readtimeout", String.class);
 			log.info("Got response from service2 [{}]", response);
 			return response;
+		} catch (Exception e) {
+			log.error("Exception occurred while trying to send a request to service 2", e);
+			throw e;
 		} finally {
 			this.tracer.close(span);
 		}

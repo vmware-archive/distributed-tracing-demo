@@ -52,6 +52,9 @@ public class Application {
 			log.info("Calling a missing service");
 			restTemplate.getForObject("http://localhost:" + port + "/blowup", String.class);
 			return "Should blow up";
+		} catch (Exception e) {
+			log.error("Exception occurred while trying to send a request to a missing service", e);
+			throw e;
 		} finally {
 			this.tracer.close(span);
 		}
