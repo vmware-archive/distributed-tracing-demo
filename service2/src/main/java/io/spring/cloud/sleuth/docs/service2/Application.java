@@ -2,6 +2,7 @@ package io.spring.cloud.sleuth.docs.service2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +58,11 @@ public class Application {
 	}
 
 	@RequestMapping("/blowup")
-	public String blowUp() throws InterruptedException {
-		Thread.sleep(4000);
-		throw new RuntimeException("Should blow up");
+	public Callable<String> blowUp() throws InterruptedException {
+		return () -> {
+			Thread.sleep(4000);
+			throw new RuntimeException("Should blow up");
+		};
 	}
 
 	@Bean
