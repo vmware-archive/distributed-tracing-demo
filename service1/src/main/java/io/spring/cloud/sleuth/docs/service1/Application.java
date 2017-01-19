@@ -34,7 +34,7 @@ public class Application {
 		log.info("Super secret baggage item for key [baggage] is [" + secretBaggage + "]");
 		if (StringUtils.hasText(secretBaggage)) {
 			tracer.getCurrentSpan().logEvent("secret_baggage_received");
-			tracer.addTag("secret_baggage", secretBaggage);
+			tracer.addTag("baggage", secretBaggage);
 		}
 		tracer.getCurrentSpan().setBaggageItem("foo", "bar");
 		log.info("Hello from service1. Calling service2");
