@@ -57,7 +57,7 @@ root=`pwd`
 echo -e "\n\nPrinting dependencies"
 ./gradlew allDeps
 echo -e "\n\nBuilding builds in parallel"
-./gradlew build --parallel
+./gradlew build --parallel --refresh-dependencies
 
 # ======================================= BUILD END   =======================================
 
