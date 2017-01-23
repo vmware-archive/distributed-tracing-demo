@@ -76,7 +76,7 @@ configure(subprojects) {
 
     dependencyManagement {
         imports {
-            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${project.findProperty('BOM_VERSION') ?: BOM_VERSION}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${project.findProperty('BOM_VERSION') ?: "Dalston.BUILD-SNAPSHOT"}"
         }
     }
 

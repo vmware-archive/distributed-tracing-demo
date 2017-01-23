@@ -53,7 +53,7 @@ function reset(){
 
 # ======================================= BUILD START =======================================
 root=`pwd`
-./gradlew clean build --parallel
+./gradlew clean --parallel && ./gradlew build --parallel
 
 # ======================================= BUILD END   =======================================
 
