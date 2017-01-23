@@ -98,6 +98,10 @@ configure(subprojects) {
 
 }
 
+configure(subprojects) {
+    task allDeps(type: DependencyReportTask) {}
+}
+
 configure(subprojects - project(':acceptance-tests')) {
 
     dependencies {

@@ -53,7 +53,11 @@ function reset(){
 
 # ======================================= BUILD START =======================================
 root=`pwd`
-./gradlew clean --parallel && ./gradlew build --parallel
+./gradlew clean --parallel
+echo -e "\n\nPrinting dependencies"
+./gradlew allDeps
+echo -e "\n\nBuilding builds in parallel"
+./gradlew build --parallel
 
 # ======================================= BUILD END   =======================================
 
