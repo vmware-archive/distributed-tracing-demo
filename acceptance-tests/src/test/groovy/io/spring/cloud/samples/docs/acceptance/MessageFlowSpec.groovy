@@ -53,7 +53,7 @@ class MessageFlowSpec extends Specification {
 		given: "Request with a traceId"
 			RequestEntity request = request_to_service1(traceId)
 		when: "Request is sent to the Service1"
-			request_sent_for_service1_with_traceId(traceId, request)
+			request_sent_for_service1_with_traceId(request)
 		then: "Entry in Zipkin is present for the traceId"
 			entry_for_trace_id_is_present_in_Zipkin(traceId)
 		and: "The dependency graph looks like in the docs"
@@ -62,7 +62,19 @@ class MessageFlowSpec extends Specification {
 			traceId = Span.idToHex(new Random().nextLong())
 	}
 
-	private request_sent_for_service1_with_traceId(String traceId, RequestEntity request) {
+	@Unroll
+	def 'should send message to service1 and get read timeout [#traceId]'() {
+		given: "Request with a traceId"
+			RequestEntity request = request_to_service1_at_readtimeout(traceId)
+		when: "Failing request is sent to the Service1"
+			failing_request_sent_for_service1_with_traceId(request)
+		then: "Entry in Zipkin is present for the traceId"
+			failed_entry_for_trace_id_is_present_in_Zipkin(traceId)
+		where:
+			traceId = Span.idToHex(new Random().nextLong())
+	}
+
+	private request_sent_for_service1_with_traceId( RequestEntity request) {
 		await().pollInterval(1, SECONDS).atMost(60, SECONDS).until(new Runnable() {
 			@Override
 			void run() {
@@ -76,11 +88,33 @@ class MessageFlowSpec extends Specification {
 		})
 	}
 
+	private failing_request_sent_for_service1_with_traceId(RequestEntity request) {
+		await().pollInterval(1, SECONDS).atMost(60, SECONDS).until(new Runnable() {
+			@Override
+			void run() {
+				ResponseEntity<String> service1Response = restTemplate().exchange(request, String)
+				log.info("Response from service1Response is [$service1Response]")
+				assert service1Response != null
+				assert service1Response.statusCode == HttpStatus.INTERNAL_SERVER_ERROR
+			}
+		})
+	}
+
 	RequestEntity request_to_service1(String traceId) {
 		HttpHeaders headers = new HttpHeaders()
 		headers.add(SPAN_ID_NAME, traceId)
 		headers.add(TRACE_ID_HEADER_NAME, traceId)
 		URI uri = URI.create("$service1Url/start")
+		RequestEntity requestEntity = new RequestEntity<>(headers, HttpMethod.POST, uri)
+		log.info("Request with traceid [$traceId] to service1 [$requestEntity] is ready")
+		return requestEntity
+	}
+
+	RequestEntity request_to_service1_at_readtimeout(String traceId) {
+		HttpHeaders headers = new HttpHeaders()
+		headers.add(SPAN_ID_NAME, traceId)
+		headers.add(TRACE_ID_HEADER_NAME, traceId)
+		URI uri = URI.create("$service1Url/readtimeout")
 		RequestEntity requestEntity = new RequestEntity<>(headers, HttpMethod.POST, uri)
 		log.info("Request with traceid [$traceId] to service1 [$requestEntity] is ready")
 		return requestEntity
@@ -98,6 +132,37 @@ class MessageFlowSpec extends Specification {
 				List<String> serviceNamesNotFoundInZipkin = serviceNamesNotFoundInZipkin(spans)
 				log.info("The following services were not found in Zipkin $serviceNamesNotFoundInZipkin")
 				assert serviceNamesNotFoundInZipkin.empty
+				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
+			}
+
+			private List<String> serviceNamesNotFoundInZipkin(List<zipkin.Span> spans) {
+				List<String> serviceNamesFoundInAnnotations = spans.collect {
+					it.annotations.endpoint.serviceName
+				}.flatten().unique()
+				List<String> serviceNamesFoundInBinaryAnnotations = spans.collect {
+					it.binaryAnnotations.endpoint.serviceName
+				}.flatten().unique()
+				return (APP_NAMES - serviceNamesFoundInAnnotations - serviceNamesFoundInBinaryAnnotations)
+			}
+		})
+	}
+
+	void failed_entry_for_trace_id_is_present_in_Zipkin(String traceId) {
+		await().pollInterval(1, SECONDS).atMost(60, SECONDS).until(new Runnable() {
+			@Override
+			void run() {
+				ResponseEntity<String> response = checkStateOfTheTraceId(traceId)
+				log.info("Response from the Zipkin query service about the trace id [$response] for trace with id [$traceId]")
+				assert response.statusCode == HttpStatus.OK
+				assert response.hasBody()
+				List<zipkin.Span> spans = Codec.JSON.readSpans(response.body.bytes)
+				// we're checking if the latest annotation based functionality is working
+				zipkin.Span foundSpan = spans.find {
+					it.name == "first_span" && it.binaryAnnotations.find { it.key == "someTag"} &&
+							it.binaryAnnotations.find { it.key == "error"}
+				}
+				log.info("The following spans <{}> were found in Zipkin for the traceid <{}>", spans, traceId)
+				assert foundSpan != null
 				log.info("Zipkin tracing is working! Sleuth is working! Let's be happy!")
 			}
 
@@ -138,7 +203,6 @@ class MessageFlowSpec extends Specification {
 					return acc
 				}
 				assert parentsAndChildren['service1'] == ['service2']
-				assert parentsAndChildren['service2'].size() == 2
 				assert parentsAndChildren['service2'].containsAll(['service3', 'service4'])
 			}
 		})
