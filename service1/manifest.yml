@@ -1,7 +1,7 @@
 ---
 applications:
 - name: docssleuth-service1
-  memory: 512M
+  memory: 1024m
   instances: 1
   host: docssleuth-service1
   path: build/libs/service1-1.0.0.SLEUTH_DOCS.jar
