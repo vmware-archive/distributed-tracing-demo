@@ -1,13 +1,13 @@
 ---
 applications:
-- name: docssleuth-zipkin-server
+- name: zipkin-server-for-pcf
   memory: 1024M
   instances: 1
-  host: docssleuth-zipkin-server
+  host: zipkin-server-for-pcf
   path: build/libs/zipkin-server-1.0.0.SLEUTH_DOCS.jar
   services:
-    - docssleuth-rabbitmq
-    - docssleuth-mysql
+    - rabbitmq_stream
+    - mysql_db
   env:
     SPRING_PROFILES_ACTIVE: cloud
     DEBUG: "true"

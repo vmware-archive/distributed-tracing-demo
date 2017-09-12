@@ -1,8 +1,7 @@
 package io.spring.cloud.sleuth.docs.service2;
 
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.concurrent.Callable;
+//import com.github.tomakehurst.wiremock.WireMockServer;
+//import com.github.tomakehurst.wiremock.client.WireMock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,53 +19,42 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+
+
 @SpringBootApplication
 @RestController
 public class Application {
 
-	private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private static Logger log = org.slf4j.LoggerFactory.getLogger(Application.class);
 
 	@Autowired RestTemplate restTemplate;
 	@Autowired Tracer tracer;
-	@Value("${service3.address:localhost:8083}") String serviceAddress3;
-	@Value("${service4.address:localhost:8084}") String serviceAddress4;
-	Integer port = 8082;
 
-	@RequestMapping("/foo")
-	public String service2MethodInController() throws InterruptedException {
-		Thread.sleep(200);
-		log.info("Service2: Baggage for [foo] is [" + tracer.getCurrentSpan().getBaggageItem("foo") + "]");
-		log.info("Hello from service2. Calling service3 and then service4");
-		String service3 = restTemplate.getForObject("http://" + serviceAddress3 + "/bar", String.class);
-		log.info("Got response from service3 [{}]", service3);
-		String service4 = restTemplate.getForObject("http://" + serviceAddress4 + "/baz", String.class);
-		log.info("Got response from service4 [{}]", service4);
-		return String.format("Hello from service2, response from service3 [%s] and from service4 [%s]", service3, service4);
+
+	@Value("${service3.address:localhost:8083}") String service3Address;
+	@Value("${service4.address:localhost:8084}") String service4Address;
+
+	@RequestMapping("/")
+	public String frontPage() throws InterruptedException {
+		log.info("Front Page");
+		return "Front Page";
 	}
 
-	@RequestMapping("/readtimeout")
-	public String connectionTimeout() throws InterruptedException {
-		Span span = this.tracer.createSpan("second_span");
-		Thread.sleep(500);
-		try {
-			log.info("Calling a missing service");
-			restTemplate.getForObject("http://localhost:" + port + "/blowup", String.class);
-			return "Should blow up";
-		} catch (Exception e) {
-			log.error("Exception occurred while trying to send a request to a missing service", e);
-			throw e;
-		} finally {
-			this.tracer.close(span);
-		}
+	@RequestMapping("/startOfService2")
+	public String service2Controller() throws InterruptedException {
+		log.info("Hello from Service2. Calling Service3 and then Service4");
+		String service3 = restTemplate.getForObject("http://" + service3Address + "/startOfService3", String.class);
+		log.info("Got response from Service3 [{}]", service3);
+		String service4 = restTemplate.getForObject("http://" + service4Address + "/startOfService4", String.class);
+		log.info("Got response from Service4 [{}]", service4);
+		return String.format("Hello from Service2. Calling Service3 [%s] and then Service4 [%s]", service3, service4);
 	}
 
-	@RequestMapping("/blowup")
-	public Callable<String> blowUp() throws InterruptedException {
-		return () -> {
-			Thread.sleep(4000);
-			throw new RuntimeException("Should blow up");
-		};
-	}
+
 
 	@Bean
 	RestTemplate restTemplate() {
