@@ -10,15 +10,22 @@ Once you have deployed these apps in your environment, you should have the follo
 
 [Demo Instructions:]
 1. Hit /demostart endpoint on your app: for example mine is here:https://service1-demo.cfapps.io/demostart
+
 2. If everything works fine, then you see a message displayed on your screen that should say: "Hello from Service2. Calling Service3 [Hello from Service3] and then Service4 [Hello from Service4]"
+
 3. Navigate to zipkin and click on service1 from the dropdown for app and click on demostart endpoint.
+
 ![Screenshot](zipkin_ui.png)
 4. Click on the newest trace you generated, you should see the below trace & span now. This means your request & response has traveled through 4 services in its lifetime. Trace represents the entire journey of a request. Span represents single operation call.
+
 ![Screenshot](zipkin_trace.png)
-5. Click on a desired span to see the details specifically mvc.controller.class	and mvc.controller.method helps you quickly find the class and method this span represents. Hence, you can now pinpoint the problem by looking at the dashboard
+5. Click on a desired span to see the details specifically mvc.controller.class	and mvc.controller.method helps you quickly find the class and method this span represents. Hence, you can now pinpoint the problem by looking at the dashboard.
+
 ![Screenshot](zipkin_span.png)
 6. Zipkin also gives you a dependency graph that can help diagnose dependencies for example, by clicking on the apps you will see how many times did 1 app called another one.
+
 ![Screenshot](zipkin_dependencyGraph.png)
+![Screenshot](zipkin_dependencyGraphDetails.png)
 
 
 
